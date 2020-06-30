@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import logo from './logo.svg'
 import './App.css'
 import { AgGridReact } from 'ag-grid-react'
-import 'ag-grid-community/dist/styles/ag-grid.css'
-import 'ag-grid-community/dist/styles/ag-theme-alpine.css'
+import '../../server/node_modules/ag-grid-community/dist/styles/ag-grid.css'
+import '../../server/node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css'
 
 class App extends Component {
   state: Readonly<any>
