@@ -1,0 +1,17 @@
+{
+  "name": "sqlalchemy-ag-grid",
+  "version": "1.0.0",
+  "description": "quick demo (sqlAlchemy and ag-grid) ===",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Robert Collins <robert.collins@qwire.com>",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "express": "^4.17.1",
+    "sqlite3": "^4.2.0"
+  }
+}
