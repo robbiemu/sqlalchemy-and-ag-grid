@@ -1,6 +1,8 @@
 import random
 import numpy as np
 
+'''classes to generate a solved sudoku'''
+
 
 class SudokuCel:
     '''convenience generator -- houses options for the cel

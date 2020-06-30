@@ -4,6 +4,8 @@ from database.mask import Mask
 from database.mask_cell import MaskCell
 import numpy as np
 
+'''Sudoku - a class to prepare database entities of a sudoku puzzle'''
+
 
 class Sudoku:
     def __init__(self, solved, masked):
@@ -11,6 +13,7 @@ class Sudoku:
         self.data.extend(self.get_masked_entities(masked))
 
     def get_solved_entities(self, grid):
+        '''get database entities related to a solved grid'''
         data = []
         for row in range(0, 7, 3):
             for col in range(0, 7, 3):
@@ -20,6 +23,7 @@ class Sudoku:
         return data
 
     def get_masked_entities(self, grid):
+        '''get database entities related to a puzzle's mask'''
         data = []
         data.append(Mask(puzzle=self.data[-1]))
         for li in np.transpose(np.nonzero(grid)):

@@ -3,6 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, ForeignKey
 
+'''puzzle database entity'''
+
 
 class Puzzle(Base):
     __tablename__ = 'puzzles'

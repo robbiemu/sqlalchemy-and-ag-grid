@@ -5,10 +5,10 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
+'''database abstraction façade'''
+
 
 class DataSource:
-    '''data source façade'''
-
     def __init__(self, connection_string: str):
         '''by default we will connect if we have a connection string'''
         if connection_string == None:

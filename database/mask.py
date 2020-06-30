@@ -3,6 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, ForeignKey
 
+'''mask database entity'''
+
 
 class Mask(Base):
     __tablename__ = 'masks'
