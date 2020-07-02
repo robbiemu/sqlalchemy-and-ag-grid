@@ -53,11 +53,11 @@ class SudokuGenerator:
         2. for each cel in the array, resolve it
         3. route broadcasts to appropriate cels so they can self-trim and resolve
         '''
-        for row in range(0, 9):
-            for col in range(0, 9):
+        for row in range(9):
+            for col in range(9):
                 self.cels[row, col] = SudokuCel(row, col, self)
-        for row in range(0, 9):
-            for col in range(0, 9):
+        for row in range(9):
+            for col in range(9):
                 if self.cels[row, col].n is None:
                     self.cels[row, col].resolve()
 

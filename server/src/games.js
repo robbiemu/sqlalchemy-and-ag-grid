@@ -28,7 +28,7 @@ const configurations = [
         )
         .join(' ')
 
-      const puzzle_query = `SELECT puzzle.id, ${selection_columns} FROM puzzles AS puzzle ${joins}`
+      const puzzle_query = `SELECT puzzle.id as puzzle_id, ${selection_columns} FROM puzzles AS puzzle ${joins}`
       console.log(puzzle_query)
       db.each(
         puzzle_query,

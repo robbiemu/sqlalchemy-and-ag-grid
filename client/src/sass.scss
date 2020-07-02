@@ -1,0 +1,19 @@
+@mixin margin-vertical($coefficient) {
+  margin-top: $coefficient;
+  margin-bottom: $coefficient;
+}
+
+@mixin margin-horizontal($coefficient) {
+  margin-left: $coefficient;
+  margin-right: $coefficient;
+}
+
+@mixin padding-vertical($coefficient) {
+  padding-top: $coefficient;
+  padding-bottom: $coefficient;
+}
+
+@mixin padding-horizontal($coefficient) {
+  padding-left: $coefficient;
+  padding-right: $coefficient;
+}

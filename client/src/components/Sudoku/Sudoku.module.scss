@@ -1,0 +1,45 @@
+@import '../../sass.scss';
+
+.Sudoku {
+  display: flex;
+  flex-direction: column;
+  width: min-content;
+  border: solid 1.5pt grey;
+  @include margin-vertical(2rem);
+}
+
+.Sudoku .row {
+  display: flex;
+  flex-direction: row;
+  width: min-content;
+  &:not(:first-child) {
+    &:nth-child(3n + 1) {
+      border-top: solid 2pt lightgrey;
+    }
+    &:not(:nth-child(3n + 1)) {
+      border-top: solid thin lightgrey;
+    }
+  }
+  &:not(:last-child) {
+    border-bottom: solid thin lightgrey;
+  }
+}
+.Sudoku .col {
+  display: flex;
+  flex-direction: col;
+  justify-content: center;
+  align-items: center;
+  width: 2em;
+  height: 2em;
+  &:not(:first-child) {
+    &:nth-child(3n + 1) {
+      border-left: solid 2pt lightgrey;
+    }
+    &:not(:nth-child(3n + 1)) {
+      border-left: solid thin lightgrey;
+    }
+  }
+  &:not(:last-child) {
+    border-right: solid thin lightgrey;
+  }
+}
