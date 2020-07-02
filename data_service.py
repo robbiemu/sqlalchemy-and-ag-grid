@@ -22,6 +22,9 @@ class DataService:
         '''get sudoku data for upload and send it to the database'''
         data = self.get_data()
 
+        if data is None:
+            return
+
         self.data_source.session.add_all(data)
         self.data_source.commit_transaction()
 
@@ -33,7 +36,7 @@ class DataService:
         if None in grid:
             return
         if not Environment.is_production():
-            print(grid, flush=True)
+            print('\n', grid, flush=True)
         masked = self.generate_puzzle(grid, timeout - time.time())
         if None in masked:
             return
