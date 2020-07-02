@@ -1,11 +1,16 @@
 import time
 import random
 import numpy as np
+from environment import Environment
 
 
 class SudokuMasker:
+    limit = 0
     seed_numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9}
     '''given a Sudoku grid, reduce it to its least uniquely resolvable shape.'''
+
+    def __init__(self, timeout):
+        self.limit = timeout
 
     def get_minimal_form(self, grid):
         '''get the least uniquely resolvable shape
@@ -16,7 +21,7 @@ class SudokuMasker:
         '''
         self.reset_list_of_indices(grid)
         test = grid.copy()
-        timeout = time.time() + 60*5   # 5 minutes from now
+        timeout = time.time() + self.limit
         while(len(self.indices) > 0):
             index = tuple(self.indices.pop())
             n = test[index]

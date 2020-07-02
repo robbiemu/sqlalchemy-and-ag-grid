@@ -1,4 +1,5 @@
 import random
+import time
 import numpy as np
 
 '''classes to generate a solved sudoku'''
@@ -54,6 +55,10 @@ class SudokuGenerator:
     track = set()
     resolve = False
     retrace = 1
+    limit = 0
+
+    def __init__(self, timeout):
+        self.limit = timeout
 
     def generate(self):
         '''a roughly hewn method for generating sudoku by:
@@ -65,10 +70,11 @@ class SudokuGenerator:
             for col in range(9):
                 self.cels[row, col] = SudokuCel(row, col, self)
 
+        timeout = time.time() + self.limit   # 5 minutes from now
         while True:
             self.retrace = 1
             self.solve()
-            if not self.resolve:
+            if not self.resolve or time.time() > timeout:
                 break
 
     def solve(self):
@@ -82,7 +88,8 @@ class SudokuGenerator:
                         if self.cels[row, col].n is None:
                             self.backtrack()
                     else:
-                        print('illegal state', self.cels, len(self.track))
+                        #print('illegal state', self.cels, len(self.track))
+                        print('.', end='', flush=True)
                         if len(self.track) > 0:
                             self.backtrack()
 

@@ -3,6 +3,7 @@ from sudoku.generator import SudokuGenerator
 from sudoku.masker import SudokuMasker
 from database.data_source import DataSource
 from database.sudoku import Sudoku
+import time
 
 '''Data Service - a class to generate and send puzzles to the database'''
 
@@ -26,25 +27,31 @@ class DataService:
 
     def get_data(self):
         '''get sudoku data for upload'''
-        grid = self.generate_board()
+        timeout = time.time() + Environment.get_frequency()
+
+        grid = self.generate_board(timeout - time.time())
+        if None in grid:
+            return
         if not Environment.is_production():
             print(grid, flush=True)
-        masked = self.generate_puzzle(grid)
+        masked = self.generate_puzzle(grid, timeout - time.time())
+        if None in masked:
+            return
         if not Environment.is_production():
             print(masked, flush=True)
 
         s = Sudoku(grid, masked)
         return s.data
 
-    def generate_puzzle(self, seed):
+    def generate_puzzle(self, seed, timeout):
         '''get a set of masks to generate a playable game from the sudoku solution'''
-        masker = SudokuMasker()
+        masker = SudokuMasker(timeout)
         grid = masker.get_minimal_form(seed)
 
         return grid
 
-    def generate_board(self):
+    def generate_board(self, timeout):
         '''get a solved sudoku'''
-        generator = SudokuGenerator()
+        generator = SudokuGenerator(timeout)
         generator.generate()
         return generator.get_grid()
