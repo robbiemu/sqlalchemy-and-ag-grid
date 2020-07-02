@@ -32,13 +32,16 @@ class DataService:
         '''get sudoku data for upload'''
         timeout = time.time() + Environment.get_frequency()
 
-        grid = self.generate_board(timeout - time.time())
+        limit = timeout - time.time()
+        grid = self.generate_board(limit)
         if None in grid:
+            print('failed to generate grid in timelimit', limit)
             return
         if not Environment.is_production():
             print('\n', grid, flush=True)
         masked = self.generate_puzzle(grid, timeout - time.time())
         if None in masked:
+            print('failed to generate grid and masks in timelimit', limit)
             return
         if not Environment.is_production():
             print(masked, flush=True)
