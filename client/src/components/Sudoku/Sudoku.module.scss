@@ -4,8 +4,10 @@
   display: flex;
   flex-direction: column;
   width: min-content;
-  border: solid 1.5pt grey;
   @include margin-vertical(2rem);
+  border: solid 1.5pt grey;
+  background-color: #eee;
+  color: #555;
 }
 
 .Sudoku .row {
@@ -26,7 +28,7 @@
 }
 .Sudoku .col {
   display: flex;
-  flex-direction: col;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 2em;
@@ -42,4 +44,24 @@
   &:not(:last-child) {
     border-right: solid thin lightgrey;
   }
+}
+
+.secondary-highlight-row,
+.secondary-highlight-col {
+  background-color: whitesmoke;
+}
+
+.highlight-row,
+.highlight-col {
+  background-color: white;
+
+  .secondary-highlight-row,
+  .secondary-highlight-col {
+    background-color: white;
+  }
+}
+
+.highlight-number {
+  color: black;
+  font-weight: bold;
 }
