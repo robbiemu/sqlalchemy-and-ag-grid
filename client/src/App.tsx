@@ -25,7 +25,7 @@ class App extends Component {
         <section className='games-listing'>
           <h2>Sudoku games</h2>
           <ul>
-            {this.state.games.map((game, index) => (
+            {this.state.games.map(({ solution, game }, index) => (
               <li
                 className={'game-listing game-' + index}
                 key={'game-' + index}

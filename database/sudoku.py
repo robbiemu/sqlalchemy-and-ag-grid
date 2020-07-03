@@ -26,7 +26,7 @@ class Sudoku:
         '''get database entities related to a puzzle's mask'''
         data = []
         data.append(Mask(puzzle=self.data[-1]))
-        for li in np.transpose(np.nonzero(grid)):
-            x, y = tuple(li)
-            data.append(MaskCell(mask=data[0], x=int(x), y=int(y)))
+        for li in np.transpose(np.where(grid == 0)):
+            y, x = tuple(li)
+            data.append(MaskCell(mask=data[0], y=int(y), x=int(x)))
         return data
