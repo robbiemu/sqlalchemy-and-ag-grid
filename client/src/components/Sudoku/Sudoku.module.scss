@@ -51,6 +51,11 @@
   background-color: whitesmoke;
 }
 
+.ternary-highlight-row,
+.ternary-highlight-col {
+  background-color: ghostwhite;
+}
+
 .highlight-grid,
 .highlight-row,
 .highlight-col {
@@ -59,6 +64,11 @@
   .secondary-highlight-row,
   .secondary-highlight-col {
     background-color: white;
+  }
+
+  .ternary-highlight-row,
+  .ternary-highlight-col {
+    background-color: ghostwhite;
   }
 }
 

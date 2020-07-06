@@ -2,7 +2,7 @@ const express = require('express')
 const sqlite3 = require('sqlite3').verbose()
 const cors = require('cors')
 const whitelist = require('./whitelist')
-globalThis.db = new sqlite3.Database('../dev.db')
+globalThis.db = new sqlite3.Database(process.env.DATABASE || '../dev.db')
 
 const endpointsRegistrar = require('./src/endpoints')
 
