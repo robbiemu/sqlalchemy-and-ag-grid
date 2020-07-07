@@ -1,3 +1,4 @@
+from environment import Environment
 import random
 import time
 import numpy as np
@@ -88,8 +89,8 @@ class SudokuGenerator:
                         if self.cels[row, col].n is None:
                             self.backtrack()
                     else:
-                        #print('illegal state', self.cels, len(self.track))
-                        print('.', end='', flush=True)
+                        if not Environment.is_production():
+                            print('.', end='', flush=True)
                         if len(self.track) > 0:
                             self.backtrack()
 
