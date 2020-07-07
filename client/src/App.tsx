@@ -38,8 +38,9 @@ class App extends Component {
               >
                 <span className={'title'}>
                   {'puzzle ' + puzzle_id} (
-                  {(this.state.data.difficulty[puzzle_id] as any).difficulty +
-                    ' difficulty - '}
+                  {(this.state.data.difficulty[
+                    puzzle_id
+                  ] as any).difficulty.toPrecision(3) + ' difficulty - '}
                   {
                     (game as any).flat().filter((x: number) => x !== null)
                       .length
