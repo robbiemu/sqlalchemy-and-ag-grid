@@ -1,4 +1,5 @@
 # src: https://www.cs.mcgill.ca/~aassaf9/python/sudoku.txt
+
 from itertools import product
 
 

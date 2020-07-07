@@ -10,15 +10,23 @@ export interface Mask {
 export interface GamesResponse {
   puzzles: Puzzle[]
   masks: { [id: string /* never a string, always puzzle_id number */]: Mask[] }
+  difficulty: { [puzzle_id: string]: { difficulty: number } }
 }
 
 const indices = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
 
 export const sudokuParser = {
   parse (data: GamesResponse) {
-    return data.puzzles.map((puzzle: Puzzle) => ({
-      ...sudokuParser.compileGameFrom(puzzle, data.masks[puzzle.puzzle_id])
-    }))
+    return data.puzzles
+      .sort((a, b) => {
+        return data.difficulty[a.puzzle_id].difficulty >
+          data.difficulty[b.puzzle_id].difficulty
+          ? 1
+          : -1
+      })
+      .map((puzzle: Puzzle) => ({
+        ...sudokuParser.compileGameFrom(puzzle, data.masks[puzzle.puzzle_id])
+      }))
   },
   compileGameFrom (puzzle: Puzzle, masks: Mask[]) {
     let solution: number[][] = []
@@ -32,12 +40,11 @@ export const sudokuParser = {
         solution[a][b] = puzzle[x + y]
       })
     )
-    console.log('solution', JSON.parse(JSON.stringify(solution)))
 
     game = JSON.parse(JSON.stringify(solution))
 
     masks.forEach((mask: Mask) => delete game[mask.y][mask.x])
 
-    return { solution, game }
+    return { solution, game, puzzle_id: puzzle.puzzle_id }
   }
 }

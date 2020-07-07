@@ -41,14 +41,14 @@ class DataService:
             print('\n', grid, flush=True)
 
         limit = timeout - time.time()
-        masked = self.generate_puzzle(grid, limit)
+        masked, difficulty = self.generate_puzzle(grid, limit)
         if masked is None or None in masked or not 0 in masked:
             print('failed to generate grid and masks in timelimit', limit, masked)
             return
         if not Environment.is_production():
-            print('\n', masked, flush=True)
+            print('\n', masked, 'difficulty ' + str(difficulty), flush=True)
 
-        s = Sudoku(grid, masked)
+        s = Sudoku(grid, masked, difficulty)
         return s.data
 
     def generate_puzzle(self, seed, timeout):

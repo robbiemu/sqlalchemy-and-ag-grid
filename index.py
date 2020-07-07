@@ -10,9 +10,13 @@ def iterate():
     '''calls the task method on the data service, and requeues itself in a thread'''
     timeout = time.time() + freq
     ds.task()
-    print('completed.. waiting {} seconds before next run'.format(
-        int(round(timeout - time.time()))))
-    threading.Timer(timeout - time.time(), iterate).start()
+    next = timeout - time.time()
+    if Environment.is_exact_frequency():
+        print('completed.. waiting {} seconds before next run'.format(
+            int(round(next))))
+    else:
+        next = 0
+    threading.Timer(next, iterate).start()
 
 
 ds = DataService()

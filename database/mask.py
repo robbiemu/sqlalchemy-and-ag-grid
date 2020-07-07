@@ -12,3 +12,4 @@ class Mask(Base):
     id = Column(Integer, primary_key=True)
     puzzle_id = Column(Integer, ForeignKey('puzzles.id'), nullable=False)
     puzzle = relationship('Puzzle')
+    difficulty = Column(Integer)

@@ -2,6 +2,7 @@ import os
 import time
 
 DEFAULT_FREQUENCY = 60*15   # 15 minutes
+DEFAULT_EXACT_FREQUENCY = True
 DEFAULT_CONNECTIONSTRING = 'sqlite:///dev.db'
 
 
@@ -23,6 +24,13 @@ class Environment:
                 raise Exception('no FREQUENCY env set in production!')
             return DEFAULT_FREQUENCY
         return int(freq)
+
+    @staticmethod
+    def is_exact_frequency():
+        freq = os.getenv('EXACTFREQUENCY')
+        if freq == None:
+            return DEFAULT_EXACT_FREQUENCY
+        return freq == 'True'
 
     @staticmethod
     def get_connection_string():

@@ -8,9 +8,9 @@ import numpy as np
 
 
 class Sudoku:
-    def __init__(self, solved, masked):
+    def __init__(self, solved, masked, difficulty):
         self.data = self.get_solved_entities(solved)
-        self.data.extend(self.get_masked_entities(masked))
+        self.data.extend(self.get_masked_entities(masked, difficulty))
 
     def get_solved_entities(self, grid):
         '''get database entities related to a solved grid'''
@@ -22,10 +22,10 @@ class Sudoku:
         data.append(Puzzle.from_list(data))
         return data
 
-    def get_masked_entities(self, grid):
+    def get_masked_entities(self, grid, difficulty):
         '''get database entities related to a puzzle's mask'''
         data = []
-        data.append(Mask(puzzle=self.data[-1]))
+        data.append(Mask(puzzle=self.data[-1], difficulty=difficulty))
         for li in np.transpose(np.where(grid == 0)):
             y, x = tuple(li)
             data.append(MaskCell(mask=data[0], y=int(y), x=int(x)))

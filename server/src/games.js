@@ -3,7 +3,7 @@ const configurations = [
     path: '/games',
     delegate (req, res) {
       const results = new Proxy(
-        { puzzles: [], masks: {} },
+        { puzzles: [], masks: {}, difficulty: {} },
         {
           set (target, property, value) {
             target[property] = value
@@ -11,7 +11,11 @@ const configurations = [
               target.hasOwnProperty('onCompletePuzzles') &&
               target.hasOwnProperty('onCompleteMasks')
             )
-              res.json({ puzzles: target.puzzles, masks: target.masks })
+              res.json({
+                puzzles: target.puzzles,
+                masks: target.masks,
+                difficulty: target.difficulty
+              })
           }
         }
       )
@@ -39,7 +43,7 @@ const configurations = [
       )
 
       const mask_query =
-        'SELECT puzzles.id as puzzle_id, maskcells.x, maskcells.y FROM maskcells ' +
+        'SELECT puzzles.id as puzzle_id, masks.difficulty, maskcells.x, maskcells.y FROM maskcells ' +
         'INNER JOIN masks ON maskcells.mask_id == masks.id ' +
         'INNER JOIN puzzles ON masks.puzzle_id == puzzles.id'
       console.log(mask_query)
@@ -49,6 +53,7 @@ const configurations = [
           if (!results.masks.hasOwnProperty(row.puzzle_id))
             results.masks[row.puzzle_id] = []
           results.masks[row.puzzle_id].push({ x: row.x, y: row.y })
+          results.difficulty[row.puzzle_id] = row
         },
         function () {
           results.onCompleteMasks = true
@@ -99,17 +104,19 @@ const configurations = [
         results.puzzle = row
       })
 
-      const mask_query =
-        'SELECT maskcells.x, maskcells.y FROM maskcells WHERE maskcells.mask_id == ' +
-        mask_id
+      const mask_query = `SELECT maskcells.x, maskcells.y, masks.difficulty FROM maskcells INNER JOIN masks WHERE maskcells.mask_id == ${mask_id} `
       console.log(mask_query)
+      difficulty = 0
       db.each(
         mask_query,
         function (err, row) {
+          difficulty = row.difficulty
+          delete row.difficulty
           maskcells.push(row)
         },
         function () {
           results.mask = maskcells
+          results.difficulty = difficulty
         }
       )
     }

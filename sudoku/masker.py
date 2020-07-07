@@ -8,6 +8,7 @@ import numpy as np
 class SudokuMasker:
     limit = 0
     timeout = 0
+    difficulty = 0
     seed_numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9}
     '''given a Sudoku grid, reduce it to its least uniquely resolvable shape.'''
 
@@ -21,6 +22,7 @@ class SudokuMasker:
         3. try to solve. if it is not solvable, go back to 2. if the list is exhausted, return the current state of the puzzle.
         4. if it is solvable, remove the number from the grid, go back to 1.
         '''
+        self.difficulty = 0
         self.timeout = time.time() + self.limit
 
         if not Environment.is_production():
@@ -41,24 +43,33 @@ class SudokuMasker:
                 self.reset_list_of_indices(test)
             if time.time() > self.timeout:
                 break
-        return test
+        return test, self.difficulty
 
     def is_solvable(self, grid, depth=1):
-        '''nice elegant solution from src: https://medium.com/@feliciaSWE/solving-sudoku-with-python-numpy-and-set-95ca55f9ba01'''
+        '''nice elegant
+        difficulty =   solution from src: https://medium.com/@feliciaSWE/solving-sudoku-with-python-numpy-and-set-95ca55f9ba01'''
         if time.time() > self.timeout:
             return False
 
+        self.difficulty += 1/729  # 9**3
+
         last = np.empty(shape=(9, 9), dtype=object)
+        original = grid.copy()
         while(not (last == grid).all() and not self.is_solved(grid)):
             last = grid.copy()
             grid, P = self.reduce(grid)
 
         if len(np.transpose(np.nonzero(grid))) == 81:
+            if len(list(solve_sudoku((3, 3), original))) != 1:
+                print('reached invalid state (false positive) in felicia\'s section with grid',
+                      original, 'at state:', grid)
             return True
         else:  # use covering solution
             if not Environment.is_production():
                 print('+', end='', flush=True)
-            return len(list(solve_sudoku((3, 3), grid))) == 1
+            if len(list(solve_sudoku((3, 3), original))) == 1:
+                self.difficulty += 1/17
+                return True
 
     def reduce(self, grid):
         '''src: https://medium.com/@feliciaSWE/solving-sudoku-with-python-numpy-and-set-95ca55f9ba01'''

@@ -81,18 +81,25 @@ class SudokuGenerator:
     def solve(self):
         self.resolve = False
         self.retrace = self.retrace + 1
+        for n in range(3):
+            for row in range(n, n + 3):
+                for col in range(n, n + 3):
+                    self.assign(row, col)
         for row in range(9):
             for col in range(9):
+                self.assign(row, col)
+
+    def assign(self, row, col):
+        if self.cels[row, col].n is None:
+            if len(self.cels[row, col].seed_numbers) > 0:
+                self.cels[row, col].resolve()
                 if self.cels[row, col].n is None:
-                    if len(self.cels[row, col].seed_numbers) > 0:
-                        self.cels[row, col].resolve()
-                        if self.cels[row, col].n is None:
-                            self.backtrack()
-                    else:
-                        if not Environment.is_production():
-                            print('.', end='', flush=True)
-                        if len(self.track) > 0:
-                            self.backtrack()
+                    self.backtrack()
+            else:
+                if not Environment.is_production():
+                    print('.', end='', flush=True)
+                if len(self.track) > 0:
+                    self.backtrack()
 
     def backtrack(self):
         for step in range(self.retrace):
