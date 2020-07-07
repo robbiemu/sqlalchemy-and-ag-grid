@@ -12,7 +12,7 @@ def iterate(out_q, thread_index):
     '''calls the task method on the data service, and requeues itself in a thread'''
     timeout = time.time() + freq
 
-    out_q.put(DataService.get_data())
+    out_q.put((thread_index, DataService.get_data()))
 
     next = timeout - time.time()
     if Environment.is_exact_frequency():
@@ -23,9 +23,12 @@ def iterate(out_q, thread_index):
 
     t = Timer(next, iterate, args=(out_q, thread_index))
     t.start()
-    if threads[thread_index] != None:
-        threads[thread_index].join()
-    threads.append(t)
+    if len(threads) > [thread_index]:
+        if threads[thread_index] != None:
+            threads[thread_index].join()
+        threads[thread_index] = t
+    else:
+        threads.append(t)
 
 
 freq = Environment.get_frequency()
@@ -34,7 +37,9 @@ freq = Environment.get_frequency()
 def manage_data(in_q):
     ds = DataService()
     while True:
-        data = in_q.get()
+        thread, data = in_q.get()
+        print('[DataService] sending data for thread', thread)
+
         ds.task(data)
 
 
@@ -52,5 +57,6 @@ if __name__ == "__main__":
     for index in range(thread_count):
         p = pool.Process(target=iterate, args=(q, index), group=None)
         p.start()
+        threads.append(p)
     pool.close()
     pool.join()

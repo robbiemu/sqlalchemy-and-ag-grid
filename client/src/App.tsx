@@ -11,7 +11,7 @@ class App extends Component {
   }
 
   componentDidMount () {
-    axios.get('http://localhost:3000/games').then(res => {
+    axios.get('http://localhost:3000/games?sample=4').then(res => {
       console.log(res.data)
       this.setState({
         data: res.data,
@@ -27,7 +27,7 @@ class App extends Component {
           <header>
             <h2>Sudoku games</h2>
             <span className={'caption'}>
-              {this.state.games.length} games generated
+              sample {this.state.games.length} games
             </span>
           </header>
           <ul>

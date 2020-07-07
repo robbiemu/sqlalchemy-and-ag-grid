@@ -25,8 +25,6 @@ class DataService:
         if data is None:
             return
 
-        print('[DataService] sending data', time.clock())
-
         self.data_source.session.add_all(data)
         self.data_source.commit_transaction()
 

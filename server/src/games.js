@@ -20,6 +20,8 @@ const configurations = [
         }
       )
 
+      const sample = req.query.sample
+
       const indices = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
       const selection_columns = indices
         .map(x => indices.map(y => `grid_${x}.${y} as ${x}${y}`))
@@ -32,7 +34,49 @@ const configurations = [
         )
         .join(' ')
 
-      const puzzle_query = `SELECT puzzle.id as puzzle_id, ${selection_columns} FROM puzzles AS puzzle ${joins}`
+      let puzzle_query = ` puzzle.id as puzzle_id, ${selection_columns} FROM puzzles AS puzzle ${joins}`
+      if (!isNaN(sample)) {
+        puzzle_query =
+          'SELECT DISTINCT ' +
+          puzzle_query +
+          ` 	WHERE puzzle.id IN (
+		SELECT puzzle.id FROM puzzles AS puzzle 
+	        INNER JOIN masks AS mask ON mask.puzzle_id == puzzle.id 
+			WHERE mask.difficulty IN (SELECT difficulty FROM masks ORDER BY difficulty ASC  LIMIT 10)
+			LIMIT ${sample}
+	)
+	OR puzzle.id IN (
+		SELECT puzzle.id FROM puzzles AS puzzle 
+	        INNER JOIN masks AS mask ON mask.puzzle_id == puzzle.id 
+			WHERE mask.difficulty IN (SELECT difficulty FROM masks ORDER BY difficulty DESC LIMIT 10)
+			LIMIT ${sample}
+	)
+	OR puzzle.id IN (
+		SELECT puzzle.id FROM puzzles AS puzzle 
+	        INNER JOIN masks AS mask ON mask.puzzle_id == puzzle.id 
+			WHERE mask.id IN (SELECT mask.id FROM masks ORDER BY RANDOM() LIMIT 10)
+			LIMIT ${sample}
+  )
+  OR puzzle.id IN (
+		SELECT puzzle.id FROM puzzles AS puzzle 
+	        INNER JOIN masks AS mask ON mask.puzzle_id == puzzle.id
+	        INNER JOIN maskcells AS maskcell ON maskcell.mask_id == mask.id
+			GROUP BY mask.id
+			ORDER BY COUNT(*) ASC
+			LIMIT ${sample}
+	)
+	OR puzzle.id IN (
+		SELECT puzzle.id FROM puzzles AS puzzle 
+	        INNER JOIN masks AS mask ON mask.puzzle_id == puzzle.id
+	        INNER JOIN maskcells AS maskcell ON maskcell.mask_id == mask.id
+			GROUP BY mask.id
+			ORDER BY COUNT(*) DESC
+			LIMIT ${sample}
+	)
+  `
+      } else {
+        puzzle_query = 'SELECT '
+      }
       console.log(puzzle_query)
       db.each(
         puzzle_query,
