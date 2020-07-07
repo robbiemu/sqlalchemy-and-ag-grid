@@ -10,6 +10,14 @@ class Environment:
     '''return runtime settings'''
 
     @staticmethod
+    def is_threaded():
+        '''true when we should hammer the cpu'''
+        threaded = os.getenv('THREADED')
+        if threaded == None:
+            return not Environment.is_production()
+        return threaded == 'True'
+
+    @staticmethod
     def is_production():
         '''true when runtime is in production'''
         production = os.getenv('PRODUCTION')

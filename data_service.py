@@ -18,22 +18,25 @@ class DataService:
         self.data_source = DataSource(connection_string)
         self.data_source.initialize_base()
 
-    def task(self):
+    def task(self, data):
         '''get sudoku data for upload and send it to the database'''
-        data = self.get_data()
+        # data = self.get_data()
 
         if data is None:
             return
 
+        print('[DataService] sending data', time.clock())
+
         self.data_source.session.add_all(data)
         self.data_source.commit_transaction()
 
-    def get_data(self):
+    @staticmethod
+    def get_data():
         '''get sudoku data for upload'''
         limit = Environment.get_frequency() - 1
         timeout = time.time() + limit
 
-        grid = self.generate_board(limit)
+        grid = DataService.generate_board(limit)
         if None in grid:
             print('failed to generate grid in timelimit', limit, grid)
             return
@@ -41,24 +44,26 @@ class DataService:
             print('\n', grid, flush=True)
 
         limit = timeout - time.time()
-        masked, difficulty = self.generate_puzzle(grid, limit)
+        masked, difficulty = DataService.generate_puzzle(grid, limit)
         if masked is None or None in masked or not 0 in masked:
             print('failed to generate grid and masks in timelimit', limit, masked)
             return
         if not Environment.is_production():
-            print('\n', masked, 'difficulty ' + str(difficulty), flush=True)
+            print('\n', masked, '\ndifficulty ' + str(difficulty), flush=True)
 
         s = Sudoku(grid, masked, difficulty)
         return s.data
 
-    def generate_puzzle(self, seed, timeout):
+    @staticmethod
+    def generate_puzzle(seed, timeout):
         '''get a set of masks to generate a playable game from the sudoku solution'''
         masker = SudokuMasker(timeout)
         grid = masker.get_minimal_form(seed)
 
         return grid
 
-    def generate_board(self, timeout):
+    @staticmethod
+    def generate_board(timeout):
         '''get a solved sudoku'''
         generator = SudokuGenerator(timeout)
         generator.generate()
