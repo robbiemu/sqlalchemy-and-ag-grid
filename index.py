@@ -23,7 +23,8 @@ def iterate(out_q, thread_index):
 
     t = Timer(next, iterate, args=(out_q, thread_index))
     t.start()
-    # threads[thread_index].join()
+    if threads[thread_index] != None:
+        threads[thread_index].join()
     threads.append(t)
 
 
