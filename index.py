@@ -10,39 +10,33 @@ from timer import Timer
 
 def iterate(out_q, thread_index):
     '''calls the task method on the data service, and requeues itself in a thread'''
-    timeout = time.time() + freq
+    while True:
+        timeout = time.time() + freq
 
-    out_q.put((thread_index, DataService.get_data()))
+        data = DataService.get_data()
+        next = timeout - time.time()
+        out_q.put((thread_index, data))
 
-    next = timeout - time.time()
-    if Environment.is_exact_frequency():
-        print('completed.. waiting {} seconds before next run'.format(
-            int(round(next))))
-    else:
-        next = 0
+        if Environment.is_exact_frequency():
+            print('completed.. waiting {} seconds before next run'.format(
+                int(round(next))))
+        else:
+            next = 0
 
-    t = Timer(next, iterate, args=(out_q, thread_index))
-    t.start()
-    if len(threads) > thread_index:
-        if threads[thread_index] != None:
-            threads[thread_index].join()
-            threads[thread_index].close()
-        threads[thread_index] = t
-    else:
-        threads.append(t)
-
-
-freq = Environment.get_frequency()
+        time.sleep(next)
 
 
 def manage_data(in_q):
     ds = DataService()
     while True:
-        thread, data = in_q.get()
-        print('[__main__::manage_data] DataService - sending data for thread', thread)
+        thread_index, data = in_q.get()
+        print(
+            '[__main__::manage_data] DataService - sending data for thread', thread_index)
 
         ds.task(data)
 
+
+freq = Environment.get_frequency()
 
 if __name__ == "__main__":
     thread_count = multiprocessing.cpu_count() - 1 if Environment.is_threaded() else 1
