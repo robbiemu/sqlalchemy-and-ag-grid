@@ -52,10 +52,9 @@ const configurations = [
 			LIMIT ${sample}
 	)
 	OR puzzle.id IN (
-		SELECT puzzle.id FROM puzzles AS puzzle 
-	        INNER JOIN masks AS mask ON mask.puzzle_id == puzzle.id 
-			WHERE mask.id IN (SELECT mask.id FROM masks ORDER BY RANDOM() LIMIT 10)
-			LIMIT ${sample}
+		SELECT puzzle.id FROM puzzles as puzzle
+			ORDER BY RANDOM()
+			LIMIT 4
   )
   OR puzzle.id IN (
 		SELECT puzzle.id FROM puzzles AS puzzle 

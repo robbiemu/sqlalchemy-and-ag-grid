@@ -23,9 +23,10 @@ def iterate(out_q, thread_index):
 
     t = Timer(next, iterate, args=(out_q, thread_index))
     t.start()
-    if len(threads) > [thread_index]:
+    if len(threads) > thread_index:
         if threads[thread_index] != None:
             threads[thread_index].join()
+            threads[thread_index].close()
         threads[thread_index] = t
     else:
         threads.append(t)
@@ -38,7 +39,7 @@ def manage_data(in_q):
     ds = DataService()
     while True:
         thread, data = in_q.get()
-        print('[DataService] sending data for thread', thread)
+        print('[__main__::manage_data] DataService - sending data for thread', thread)
 
         ds.task(data)
 
