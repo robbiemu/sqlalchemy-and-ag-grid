@@ -70,7 +70,17 @@
       font-size: 1.3em;
       line-height: 1;
       padding: 0;
+
+      &:global(.in-conflict) {
+        font-weight: 800;
+        color: crimson;
+      }
     }
+  }
+
+  &:global(.in-conflict) {
+    font-weight: 800;
+    color: crimson;
   }
 }
 
@@ -103,6 +113,11 @@
 .highlight-number {
   color: black;
   font-weight: bold;
+
+  &:global(.in-conflict) {
+    font-weight: 800;
+    color: crimson;
+  }
 }
 
 .pencil-marks {

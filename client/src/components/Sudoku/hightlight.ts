@@ -23,6 +23,38 @@ export function isSecondaryHighlightCol (
   )
 }
 
+export function isInVisibleConflict (
+  puzzle: number[][],
+  sudokuT: number[][],
+  i: number,
+  j: number
+) {
+  if (!puzzle[i][j] || puzzle[i][j] === 0) return
+
+  const row = puzzle[i].concat()
+  row.splice(j, 1)
+
+  const col = sudokuT[j].concat()
+  col.splice(i, 1)
+
+  const gi = Math.floor(i / 3) * 3
+  const gj = Math.floor(j / 3) * 3
+  let grid: number[] = puzzle
+    .filter((r, ind) => ind >= gi && ind <= gi + 2)
+    .map((r: number[], ind) =>
+      r.filter(
+        (c, inde) =>
+          inde >= gj && inde <= gj + 2 && !(ind === i - gi && inde === j)
+      )
+    )
+    .flat()
+
+  return row
+    .concat(col)
+    .concat(grid)
+    .includes(puzzle[i][j])
+}
+
 export function isHighlightGrid (
   highlights: Array<Highlight>,
   i: number,

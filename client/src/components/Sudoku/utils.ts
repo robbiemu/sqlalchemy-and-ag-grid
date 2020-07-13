@@ -6,7 +6,8 @@ import {
   isSecondaryHighlightCol,
   isHighlightGrid,
   isHighlightCol,
-  isHighlightNumber
+  isHighlightNumber,
+  isInVisibleConflict
 } from './hightlight'
 
 export function clearSelection () {
@@ -126,6 +127,7 @@ export function getCelClass (
     isHighlightNumber(highlights, puzzle, i, j)
       ? styles['highlight-number']
       : '',
+    isInVisibleConflict(puzzle, sudokuT, i, j) ? 'in-conflict' : '',
     names[puzzle[i][j]]
   ].join(' ')
 }
