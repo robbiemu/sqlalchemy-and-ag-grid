@@ -3,19 +3,32 @@ const configurations = [
     path: '/games',
     delegate (req, res) {
       const results = new Proxy(
-        { puzzles: [], masks: {}, difficulty: {} },
+        { puzzles: [], masks: {}, difficulty: {}, completedMasks: 0 },
         {
           set (target, property, value) {
             target[property] = value
+
+            if (target.puzzles.length > 0 && value === target.puzzles.length) {
+              target.onCompleteMasks = true
+            }
+
             if (
               target.hasOwnProperty('onCompletePuzzles') &&
               target.hasOwnProperty('onCompleteMasks')
-            )
+            ) {
               res.json({
                 puzzles: target.puzzles,
                 masks: target.masks,
                 difficulty: target.difficulty
               })
+            } else if (
+              target.hasOwnProperty('onCompletePuzzles') &&
+              target.completedMasks === 0
+            ) {
+              target.puzzles.forEach(puzzle => {
+                maskQuery(puzzle.puzzle_id)
+              })
+            }
           }
         }
       )
@@ -34,45 +47,46 @@ const configurations = [
         )
         .join(' ')
 
-      let puzzle_query = ` puzzle.id as puzzle_id, ${selection_columns} FROM puzzles AS puzzle ${joins}`
+      let puzzle_query = ` puzzle.id as puzzle_id, ${selection_columns} 
+FROM puzzles AS puzzle ${joins}`
       if (!isNaN(sample)) {
         puzzle_query =
           'SELECT DISTINCT ' +
           puzzle_query +
-          ` 	WHERE puzzle.id IN (
-		SELECT puzzle.id FROM puzzles AS puzzle 
-	        INNER JOIN masks AS mask ON mask.puzzle_id == puzzle.id 
-			WHERE mask.difficulty IN (SELECT difficulty FROM masks ORDER BY difficulty ASC  LIMIT 10)
-			LIMIT ${sample}
-	)
-	OR puzzle.id IN (
-		SELECT puzzle.id FROM puzzles AS puzzle 
-	        INNER JOIN masks AS mask ON mask.puzzle_id == puzzle.id 
-			WHERE mask.difficulty IN (SELECT difficulty FROM masks ORDER BY difficulty DESC LIMIT 10)
-			LIMIT ${sample}
-	)
+          ` 
+  WHERE puzzle.id IN (
+      SELECT puzzles_b.id FROM puzzles AS puzzles_b
+      JOIN masks ON masks.puzzle_id = puzzles_B.id
+      ORDER BY masks.difficulty DESC 
+      LIMIT ${sample}
+  )
+  OR puzzle.id IN (
+      SELECT puzzles_b.id FROM puzzles AS puzzles_b
+      JOIN masks ON masks.puzzle_id = puzzles_b.id
+      ORDER BY masks.difficulty ASC 
+      LIMIT ${sample}
+  )
 	OR puzzle.id IN (
 		SELECT puzzle.id FROM puzzles as puzzle
 			ORDER BY RANDOM()
-			LIMIT 4
+			LIMIT ${sample}
   )
   OR puzzle.id IN (
-		SELECT puzzle.id FROM puzzles AS puzzle 
-	        INNER JOIN masks AS mask ON mask.puzzle_id == puzzle.id
+    SELECT puzzles_b.id FROM puzzles AS puzzles_b
+	        INNER JOIN masks AS mask ON mask.puzzle_id == puzzles_b.id
 	        INNER JOIN maskcells AS maskcell ON maskcell.mask_id == mask.id
 			GROUP BY mask.id
 			ORDER BY COUNT(*) ASC
 			LIMIT ${sample}
 	)
 	OR puzzle.id IN (
-		SELECT puzzle.id FROM puzzles AS puzzle 
-	        INNER JOIN masks AS mask ON mask.puzzle_id == puzzle.id
+    SELECT puzzles_b.id FROM puzzles AS puzzles_b
+	        INNER JOIN masks AS mask ON mask.puzzle_id == puzzles_b.id
 	        INNER JOIN maskcells AS maskcell ON maskcell.mask_id == mask.id
 			GROUP BY mask.id
 			ORDER BY COUNT(*) DESC
 			LIMIT ${sample}
-	)
-  `
+	)`
       } else {
         puzzle_query = 'SELECT '
       }
@@ -85,23 +99,27 @@ const configurations = [
         () => (results.onCompletePuzzles = true)
       )
 
-      const mask_query =
-        'SELECT puzzles.id as puzzle_id, masks.difficulty, maskcells.x, maskcells.y FROM maskcells ' +
-        'INNER JOIN masks ON maskcells.mask_id == masks.id ' +
-        'INNER JOIN puzzles ON masks.puzzle_id == puzzles.id'
-      console.log(mask_query)
-      db.each(
-        mask_query,
-        function (err, row) {
-          if (!results.masks.hasOwnProperty(row.puzzle_id))
-            results.masks[row.puzzle_id] = []
-          results.masks[row.puzzle_id].push({ x: row.x, y: row.y })
-          results.difficulty[row.puzzle_id] = row
-        },
-        function () {
-          results.onCompleteMasks = true
-        }
-      )
+      function maskQuery (puzzle_id) {
+        const mask_query = `
+SELECT puzzles.id as puzzle_id, masks.difficulty, maskcells.x, maskcells.y 
+  FROM maskcells 
+  INNER JOIN masks ON maskcells.mask_id == masks.id 
+  INNER JOIN puzzles ON masks.puzzle_id == puzzles.id
+  WHERE puzzles.id == ${puzzle_id}`
+        console.log(mask_query)
+        db.each(
+          mask_query,
+          function (err, row) {
+            if (!results.masks.hasOwnProperty(row.puzzle_id))
+              results.masks[row.puzzle_id] = []
+            results.masks[row.puzzle_id].push({ x: row.x, y: row.y })
+            results.difficulty[row.puzzle_id] = row
+          },
+          function () {
+            results.completedMasks++
+          }
+        )
+      }
     }
   },
   {

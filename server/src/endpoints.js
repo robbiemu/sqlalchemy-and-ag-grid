@@ -3,6 +3,7 @@ const games = require('./games')
 const maskcells = require('./maskcells')
 const masks = require('./masks')
 const puzzles = require('./puzzles')
+const random = require('./random')
 
 class EndpointRegistrar {
   constructor () {
@@ -25,7 +26,7 @@ class EndpointRegistrar {
 }
 
 endpointRegistrar = new EndpointRegistrar()
-;[grids, games, maskcells, masks, puzzles].forEach(endpoint =>
+;[grids, games, maskcells, masks, puzzles, random].forEach(endpoint =>
   endpointRegistrar.visit(endpoint)
 )
 module.exports = endpointRegistrar

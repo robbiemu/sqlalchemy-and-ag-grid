@@ -1,6 +1,13 @@
 @import '../../sass.scss';
 
+@mixin pencil() {
+  font-family: 'Grenze Gotisch', cursive;
+  color: #669;
+  vertical-align: middle;
+}
+
 .Sudoku {
+  cursor: cell;
   display: flex;
   flex-direction: column;
   width: min-content;
@@ -8,6 +15,17 @@
   border: solid 1.5pt grey;
   background-color: #eee;
   color: #555;
+
+  &.pencil-mark--tool {
+    cursor: alias;
+  }
+  &.resolve--tool {
+    cursor: auto;
+  }
+}
+
+[contenteditable='false'] {
+  user-select: none;
 }
 
 .Sudoku .row {
@@ -27,12 +45,13 @@
   }
 }
 .Sudoku .col {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 2em;
-  height: 2em;
+  width: 2rem;
+  height: 2rem;
   &:not(:first-child) {
     &:nth-child(3n + 1) {
       border-left: solid 2pt lightgrey;
@@ -43,6 +62,23 @@
   }
   &:not(:last-child) {
     border-right: solid thin lightgrey;
+  }
+
+  &:not(:global(.initial-value)) {
+    &:global(.one),
+    &:global(.two),
+    &:global(.three),
+    &:global(.four),
+    &:global(.five),
+    &:global(.six),
+    &:global(.seven),
+    &:global(.eight),
+    &:global(.nine) {
+      @include pencil;
+      font-size: 1.3em;
+      line-height: 1;
+      padding: 0;
+    }
   }
 }
 
@@ -75,4 +111,12 @@
 .highlight-number {
   color: black;
   font-weight: bold;
+}
+
+.pencil-marks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  @include pencil;
+  font-size: clamp(8px, 0.1em, 33%);
 }
