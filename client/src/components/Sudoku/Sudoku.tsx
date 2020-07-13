@@ -114,19 +114,6 @@ const Sudoku: React.FC<{ sudoku: number[][] }> = ({ sudoku }) => {
                   controller
                 )
               }
-              onDoubleClick={ev => {
-                ev.persist()
-                setPreviousCursorMode(
-                  cursorMode !== CursorMode.resolve
-                    ? cursorMode
-                    : CursorMode.default
-                )
-                setCursorMode(CursorMode.resolve)
-                setTimeout(
-                  () => focusForTextInput(ev.target as HTMLDivElement),
-                  20
-                )
-              }}
               onMouseEnter={() => {
                 setHighlights(
                   onToggleHighlight(i, j, puzzle[i][j], highlights, focus)
