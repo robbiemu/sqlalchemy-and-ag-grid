@@ -65,15 +65,7 @@
   }
 
   &:not(:global(.initial-value)) {
-    &:global(.one),
-    &:global(.two),
-    &:global(.three),
-    &:global(.four),
-    &:global(.five),
-    &:global(.six),
-    &:global(.seven),
-    &:global(.eight),
-    &:global(.nine) {
+    &:not(:global([aria-label='empty cel'])) {
       @include pencil;
       font-size: 1.3em;
       line-height: 1;
@@ -118,5 +110,6 @@
   top: 0;
   left: 0;
   @include pencil;
-  font-size: clamp(8px, 0.1em, 33%);
+  font-size: unquote('max(8px, 0.66em)');
+  line-height: 1;
 }

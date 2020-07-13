@@ -1,11 +1,11 @@
 import { Highlight } from './highlight.interface'
 import { Coordinate } from './coordinate.interface'
 import { CursorMode } from './constants'
+import { updatePuzzle } from './positional-interactions.extension'
 
 export function onKeyUp (
   ev: KeyboardEvent,
   puzzle: number[][],
-  sudoku: number[][],
   focus: Coordinate,
   highlights: Array<Highlight>,
   cursorMode: CursorMode,
@@ -55,22 +55,10 @@ export function onKeyUp (
         parseInt(ev.key),
         ev.target as HTMLDivElement,
         puzzle,
-        sudoku,
-        focus,
         cursorMode,
         pencilMarks,
         controller
       )
-      if (cursorMode !== CursorMode.pencilMark) {
-        console.log('releasing focus and highlight')
-        releaseFocusOnKeyPress(
-          getElementLocation(ev.target as HTMLElement) /*alwyas*/,
-          ev.target as HTMLElement,
-          highlights,
-          controller
-        )
-        controller.setCursorMode(CursorMode.default)
-      }
       break
     default:
       if (cursorMode === CursorMode.resolve) {
@@ -97,11 +85,15 @@ function releaseFocusOnKeyPress (
   ;(document.activeElement as HTMLElement).blur()
 
   if (location.x == focus.x && location.y == focus.y) {
-    console.log('focus and highlight in memory released')
     focus = {} as Coordinate
     controller.setFocus(focus)
 
-    controller.setHighlights([])
+    highlights.filter(
+      highlight => !(highlight.x === location.x && highlight.y === location.y)
+    )
+
+    controller.setHighlights(highlights)
+    console.log('focus and highlight in memory released', highlights)
   }
 }
 
@@ -109,8 +101,6 @@ function onNumericInput (
   value: number,
   target: HTMLDivElement,
   puzzle: number[][],
-  sudoku: number[][],
-  focus: Coordinate,
   cursorMode: CursorMode,
   pencilMarks: number[][][],
   controller: any
@@ -132,23 +122,17 @@ function onNumericInput (
       pencilMarks[location.y][location.x] = []
       controller.setPencilMarks(pencilMarks)
 
-      controller.setPuzzle(getPuzzleFromInput(puzzle, sudoku, value, target))
+      if (puzzle[location.y][location.x] !== value) {
+        puzzle[location.y][location.x] = value
+      } else {
+        delete puzzle[location.y][location.x]
+      }
+      updatePuzzle(puzzle, controller)
   }
-}
 
-function getPuzzleFromInput (
-  puzzle: number[][],
-  sudoku: number[][],
-  value: number,
-  target: HTMLDivElement
-) {
-  const location: Coordinate = getElementLocation(target)
-
-  if (sudoku[location.y][location.x] === 0 || !sudoku[location.y][location.x]) {
-    puzzle[location.y][location.x] =
-      puzzle[location.y][location.x] !== value ? value : (undefined as any)
+  if (cursorMode === CursorMode.pencilMark) {
+    controller.setFocus(location)
   }
-  return puzzle
 }
 
 function getElementLocation (target: HTMLElement): Coordinate {

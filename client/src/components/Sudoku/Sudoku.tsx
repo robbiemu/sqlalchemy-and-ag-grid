@@ -23,8 +23,8 @@ const Sudoku: React.FC<{ sudoku: number[][] }> = ({ sudoku }) => {
   )
   const [focus, setFocus] = useState({} as Coordinate)
   const [highlights, setHighlights] = useState([] as Array<Highlight>)
-  const [sudokuT, setTranspose] = useState(transpose(sudoku))
   const [puzzle, setPuzzle] = useState(JSON.parse(JSON.stringify(sudoku)))
+  const [sudokuT, setTranspose] = useState(transpose(puzzle))
   const [grid, setGrid] = useState(getGrid(sudoku))
   const [pencilMarks, setPencilMarks] = useState(
     [...Array(sudoku.length)].map(row =>
@@ -69,7 +69,6 @@ const Sudoku: React.FC<{ sudoku: number[][] }> = ({ sudoku }) => {
         onKeyUp(
           ev,
           puzzle,
-          sudoku,
           focus,
           highlights,
           cursorMode,

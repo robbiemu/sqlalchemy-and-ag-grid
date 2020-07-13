@@ -19,6 +19,8 @@ export function onCelInput (
   j: number,
   controller: any
 ) {
+  console.log('onCelInput')
+
   const n = Number.parseInt(event.currentTarget.textContent || '0')
   if (n > 0 && n < 10) {
     puzzle[i][j] = n
@@ -26,6 +28,11 @@ export function onCelInput (
   if (n === 0) {
     delete puzzle[i][j]
   }
+
+  updatePuzzle(puzzle, controller)
+}
+
+export function updatePuzzle (puzzle: number[][], controller: any) {
   controller.setTranspose(transpose(puzzle))
   controller.setGrid(getGrid(puzzle))
   controller.setPuzzle(puzzle)
